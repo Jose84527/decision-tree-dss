@@ -1,0 +1,36 @@
+@"
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# =========================
+# Java / Maven / Spring
+# =========================
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+**/.mvn/wrapper/maven-wrapper.properties
+!**/.mvn/wrapper/maven-wrapper.properties
+
+# Logs
+*.log
+
+# =========================
+# Node / React / Vite
+# =========================
+**/node_modules/
+**/dist/
+**/.vite/
+**/.env
+**/.env.local
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+"@ | Out-File -Encoding utf8 .gitignore
