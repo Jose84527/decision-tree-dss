@@ -1,8 +1,9 @@
-package com.dss.controller;
+package controller;
 
-import com.dss.dto.*;
-import com.dss.service.DecisionEngineService;
+import dto.DecisionRequest;
+import dto.DecisionResponse;
 import org.springframework.web.bind.annotation.*;
+import service.DecisionEngineService;
 
 @RestController
 @RequestMapping("/api")
@@ -16,7 +17,7 @@ public class DecisionController {
 
     @GetMapping("/health")
     public String health() {
-        return "Backend DSS funcionando correctamente 🚀";
+        return "Backend DSS funcionando correctamente";
     }
 
     @PostMapping("/dss/evaluar")
