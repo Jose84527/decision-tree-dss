@@ -1,5 +1,4 @@
-package dto;
-
+package com.decisiontree.backend.dto;
 import java.util.Map;
 
 public class AlternativaDto {

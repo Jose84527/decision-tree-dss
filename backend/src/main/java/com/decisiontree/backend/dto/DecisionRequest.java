@@ -1,18 +1,21 @@
-package dto;
+package com.decisiontree.backend.dto;
 
 import java.util.List;
 
+
 public class DecisionRequest {
 
-    private String modo; // ejemplo actual: "ranking"
+    private String modo; // ranking, valor_esperado, maximin, maximax, laplace, hurwicz, minimax_regret
+    private Double alpha; // opcional, usado en hurwicz (0 a 1)
     private List<AlternativaDto> alternativas;
     private List<ConfigDto> criterios;
 
     public DecisionRequest() {
     }
 
-    public DecisionRequest(String modo, List<AlternativaDto> alternativas, List<ConfigDto> criterios) {
+    public DecisionRequest(String modo, Double alpha, List<AlternativaDto> alternativas, List<ConfigDto> criterios) {
         this.modo = modo;
+        this.alpha = alpha;
         this.alternativas = alternativas;
         this.criterios = criterios;
     }
@@ -23,6 +26,14 @@ public class DecisionRequest {
 
     public void setModo(String modo) {
         this.modo = modo;
+    }
+
+    public Double getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(Double alpha) {
+        this.alpha = alpha;
     }
 
     public List<AlternativaDto> getAlternativas() {

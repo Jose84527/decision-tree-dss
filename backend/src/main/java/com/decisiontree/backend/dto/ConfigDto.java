@@ -1,4 +1,4 @@
-package dto;
+package com.decisiontree.backend.dto;
 
 public class ConfigDto {
 

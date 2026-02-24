@@ -1,9 +1,9 @@
-package controller;
+package com.decisiontree.backend.controller;
 
-import dto.DecisionRequest;
-import dto.DecisionResponse;
+import com.decisiontree.backend.dto.DecisionRequest;
+import com.decisiontree.backend.dto.DecisionResponse;
+import com.decisiontree.backend.service.DecisionEngineService;
 import org.springframework.web.bind.annotation.*;
-import service.DecisionEngineService;
 
 @RestController
 @RequestMapping("/api")
