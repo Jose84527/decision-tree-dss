@@ -1,9 +1,4 @@
-﻿# decision-tree-dss
 
-Repo con:
-- backend/ (Spring Boot)
-- frontend/ (React + Vite)
-Decision Tree DSS
 
 # Decision Tree DSS
 
