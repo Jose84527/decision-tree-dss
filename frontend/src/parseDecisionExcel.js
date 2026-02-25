@@ -9,66 +9,71 @@ export async function parseDecisionExcel(file) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: "array" });
 
-        const hojasRequeridas = ["config", "estados", "payoffs"];
+        const hojasRequeridas = ["config", "criterios", "alternativas"];
         for (const hoja of hojasRequeridas) {
           if (!workbook.SheetNames.includes(hoja)) {
-            throw new Error(`Falta la hoja "${hoja}" en el Excel. Se requieren: config, estados, payoffs.`);
+            throw new Error(`Falta la hoja "${hoja}". Se requieren: config, criterios, alternativas.`);
           }
         }
 
-        const sheetConfig = workbook.Sheets["config"];
-        const rawConfig = XLSX.utils.sheet_to_json(sheetConfig, { header: 1 });
-        if (rawConfig.length < 2) throw new Error('La hoja "config" está vacía o mal estructurada.');
+        // ── Hoja config ──────────────────────────────
+        const rawConfig = XLSX.utils.sheet_to_json(
+          workbook.Sheets["config"], { header: 1 }
+        );
+        if (rawConfig.length < 2) throw new Error('La hoja "config" esta vacia.');
 
-        const configRow = rawConfig[1];
-        const config = {
-          modo: String(configRow[0] || "").trim().toLowerCase(),
-          criterio: String(configRow[1] || "").trim().toLowerCase(),
-        };
-        if (configRow[2] !== undefined && configRow[2] !== "") config.alfaHurwicz = parseFloat(configRow[2]);
-        if (configRow[3] !== undefined && configRow[3] !== "") config.estadoReal = String(configRow[3]).trim();
-        if (!config.modo) throw new Error('El campo "modo" está vacío en la hoja config.');
-        if (!config.criterio) throw new Error('El campo "criterio" está vacío en la hoja config.');
+        const fila = rawConfig[1];
+        const modo = String(fila[0] || "").trim().toLowerCase();
+        const alpha = fila[1] !== undefined && fila[1] !== "" ? parseFloat(fila[1]) : null;
+        if (!modo) throw new Error('El campo "modo" esta vacio en la hoja config.');
 
-        const sheetEstados = workbook.Sheets["estados"];
-        const rawEstados = XLSX.utils.sheet_to_json(sheetEstados, { header: 1 });
-        if (rawEstados.length < 2) throw new Error('La hoja "estados" está vacía.');
+        // ── Hoja criterios ───────────────────────────
+        const rawCriterios = XLSX.utils.sheet_to_json(
+          workbook.Sheets["criterios"], { header: 1 }
+        );
+        if (rawCriterios.length < 2) throw new Error('La hoja "criterios" esta vacia.');
 
-        const estados = [];
-        for (let i = 1; i < rawEstados.length; i++) {
-          const fila = rawEstados[i];
-          if (!fila || !fila[0]) continue;
-          const nombre = String(fila[0]).trim();
-          const probabilidad = fila[1] !== undefined && fila[1] !== "" ? parseFloat(fila[1]) : null;
-          if (!nombre) continue;
-          estados.push({ nombre, probabilidad });
+        const criterios = [];
+        for (let i = 1; i < rawCriterios.length; i++) {
+          const f = rawCriterios[i];
+          if (!f || !f[0]) continue;
+          const criterio = String(f[0]).trim();
+          const peso = f[1] !== undefined && f[1] !== "" ? parseFloat(f[1]) : 0;
+          const tipo = String(f[2] || "beneficio").trim().toLowerCase();
+          if (!criterio) continue;
+          criterios.push({ criterio, peso, tipo });
         }
-        if (estados.length === 0) throw new Error('No se encontraron estados válidos.');
+        if (criterios.length === 0) throw new Error("No se encontraron criterios validos.");
 
-        const sheetPayoffs = workbook.Sheets["payoffs"];
-        const rawPayoffs = XLSX.utils.sheet_to_json(sheetPayoffs, { header: 1 });
-        if (rawPayoffs.length < 2) throw new Error('La hoja "payoffs" está vacía.');
+        // ── Hoja alternativas ────────────────────────
+        const rawAlt = XLSX.utils.sheet_to_json(
+          workbook.Sheets["alternativas"], { header: 1 }
+        );
+        if (rawAlt.length < 2) throw new Error('La hoja "alternativas" esta vacia.');
 
-        const headers = rawPayoffs[0].map((h) => String(h).trim());
-        const nombresEstadosEnPayoffs = headers.slice(1);
+        const headers = rawAlt[0].map((h) => String(h).trim());
+        const nombresCriterios = headers.slice(1);
 
         const alternativas = [];
-        for (let i = 1; i < rawPayoffs.length; i++) {
-          const fila = rawPayoffs[i];
-          if (!fila || !fila[0]) continue;
-          const nombre = String(fila[0]).trim();
+        for (let i = 1; i < rawAlt.length; i++) {
+          const f = rawAlt[i];
+          if (!f || !f[0]) continue;
+          const nombre = String(f[0]).trim();
           if (!nombre) continue;
-          const payoffs = {};
-          for (let j = 0; j < nombresEstadosEnPayoffs.length; j++) {
-            const estado = nombresEstadosEnPayoffs[j];
-            const valor = fila[j + 1];
-            if (estado && valor !== undefined && valor !== "") payoffs[estado] = parseFloat(valor);
+          const valores = {};
+          for (let j = 0; j < nombresCriterios.length; j++) {
+            const crit = nombresCriterios[j];
+            const val = f[j + 1];
+            if (crit && val !== undefined && val !== "") {
+              valores[crit] = parseFloat(val);
+            }
           }
-          alternativas.push({ nombre, payoffs });
+          alternativas.push({ nombre, valores });
         }
-        if (alternativas.length === 0) throw new Error('No se encontraron alternativas válidas.');
+        if (alternativas.length === 0) throw new Error("No se encontraron alternativas validas.");
 
-        resolve({ config, estados, alternativas });
+        resolve({ modo, alpha, criterios, alternativas });
+
       } catch (err) {
         reject(err);
       }
