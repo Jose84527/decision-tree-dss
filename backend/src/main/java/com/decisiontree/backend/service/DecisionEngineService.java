@@ -5,7 +5,7 @@ import com.decisiontree.backend.dto.DecisionRequest;
 import com.decisiontree.backend.dto.DecisionResponse;
 import com.decisiontree.backend.dto.RankingItemDto;
 import com.decisiontree.backend.service.criteria.DecisionCriteriaCalculator;
-import com.decisiontree.backend.util.RequestValidationUtils;
+import com.decisiontree.backend.utils.RequestValidationUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
